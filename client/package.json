@@ -3,6 +3,6 @@
     "typescript": "^5.3.3"
   },
   "scripts": {
-    "build": "tsc"
+    "all": "npm install && tsc"
   }
 }

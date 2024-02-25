@@ -4,11 +4,9 @@ interface tableRow {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    loadTable([
-        // { id: 1, dateAdded: new Date() },
-        // { id: 2, dateAdded: new Date() },
-        // { id: 3, dateAdded: new Date() },
-    ])
+    fetch('http://localhost:1987/getTable')
+    .then((response) => response.json())
+    .then((data) => {loadTable(data)});
 });
 
 function renderRow(row: tableRow) {

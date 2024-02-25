@@ -1,13 +1,11 @@
 # Getting the source
 `git clone https://github.com/toxycist/Plutus.git`
 
-# Building
+# Building and running
+Client and Server packages should be built and ran separately
 
-Client and Server packages should be built separately
-
-## Client
-Install the dependencies and start the application
+## For either of them
+Execute `all` script, which installs required dependencies, builds and runs the application
 ```
-npm install
-npm run build
+npm run all
 ```
