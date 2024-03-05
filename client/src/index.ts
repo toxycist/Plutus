@@ -1,6 +1,6 @@
 interface tableRow {
     id: number,
-    dateAdded: Date
+    dateAdded: string
 }
 
 document.addEventListener('DOMContentLoaded', function () {

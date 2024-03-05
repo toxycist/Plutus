@@ -13,9 +13,9 @@ app.use(express.urlencoded({extended: false}));
 
 app.get('/getTable', (request, response) => {
     response.json([
-        { id: 1, dateAdded: new Date() },
-        { id: 2, dateAdded: new Date() },
-        { id: 3, dateAdded: new Date() }
+        { id: 1, dateAdded: new Date().toLocaleString() },
+        { id: 2, dateAdded: new Date().toLocaleString() },
+        { id: 3, dateAdded: new Date().toLocaleString() }
     ])
 });
 
