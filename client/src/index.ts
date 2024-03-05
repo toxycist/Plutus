@@ -6,13 +6,13 @@ interface tableRow {
 document.addEventListener('DOMContentLoaded', function () {
     fetch('http://localhost:1987/getTable')
     .then((response) => response.json())
-    .then((data) => {loadTable(data)});
+    .then((data) => {loadTable(data)}).catch(() => loadTable([]));
 });
 
 function renderRow(row: tableRow) {
     return `<tr>
     <td>${row.id}</td>
-    <td>${row.dateAdded.toLocaleString()}</td>
+    <td>${new Date(row.dateAdded).toLocaleString()}</td>
     </tr>`
 }
 
