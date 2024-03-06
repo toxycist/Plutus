@@ -5,10 +5,13 @@ interface tableRow {
 
 const server_address = 'http://localhost:1987'
 
-function getTable(){
-    fetch(server_address + '/getTable')
-    .then((response) => response.json())
-    .then((data) => {loadTable(data)}).catch(() => loadTable([]));
+async function getTable() {
+    try {
+        const response = await(await fetch(server_address + '/getTable')).json();
+        loadTable(response);
+    } catch {
+        loadTable([]);
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => getTable());
@@ -24,7 +27,8 @@ function renderRow(row: tableRow){
 function loadTable(rowArray: Array<tableRow>){
     const tbody = document.querySelector('table tbody') as HTMLTableElement;
     if (rowArray.length === 0){
-        tbody.innerHTML = "<tr><td class='no-data' colspan='5'>No Data</td></tr>";
+        tbody.innerHTML = "<tr><td class='no-data' colspan='3'>No Data</td></tr>";
+        return;
     }
 
     tbody.innerHTML = "";
@@ -34,10 +38,12 @@ function loadTable(rowArray: Array<tableRow>){
     }
 }
 
-function addElement(){
-    fetch(server_address + '/addElement')
-    .then(response => response.json())
-    .then(response => {
-        if (response.success) getTable();
-        else alert(`An error occured; status code: ${response.statusCode}`);
-})}
+async function addElement(){
+    try {
+        const response = await (await fetch(server_address + '/addElement')).json();
+        if (!response.success) throw Error;
+        await getTable();
+    } catch {
+        alert("An error occured: the request did not reach the server")
+    }
+}
