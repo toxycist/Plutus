@@ -18,10 +18,24 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 
 app.get('/getTable', (request, response) => {
-    connection.query('SELECT * FROM test', (error, result) => {
-        if (error) throw error;
-        response.json(result);            
-})});
+    try {
+        connection.query('SELECT * FROM test', (error, result) => {
+            if (error) throw error;
+            response.json(result)});
+    } catch (error) {
+        console.log(response.statusCode);
+    }
+});
+
+app.get('/addElement', (request, response) => {
+    try {
+        connection.query('INSERT INTO test VALUES ()', (error) => {
+            if (error) throw error;
+            response.json({success: true})});
+    } catch (error) {
+        console.log(response.statusCode);
+    }
+})
 
 app.listen(process.env.PORT, () => {
     console.log(`Server has started on PORT ${process.env.PORT}`)
