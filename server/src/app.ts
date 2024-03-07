@@ -8,6 +8,7 @@ dotenv.config();
 /* There should be a .env file in '../dist' directory, containing following variables:
 PORT - localhost port the server will be running on.
 CONNECTION_STRING - the connection string to connect to MySQL database
+TABLE_NAME - name of the table in the database
 */
 
 const connection = mysql.createConnection(process.env.CONNECTION_STRING!);
@@ -19,7 +20,7 @@ app.use(express.urlencoded({extended: false}));
 
 app.get('/getTable', (request, response) => {
     try {
-        connection.query('SELECT * FROM test', (error, result) => {
+        connection.query(`SELECT * FROM ${process.env.TABLE_NAME}`, (error, result) => {
             if (error) throw error;
             response.json(result)});
     } catch (error) {
@@ -29,7 +30,7 @@ app.get('/getTable', (request, response) => {
 
 app.get('/addElement', (request, response) => {
     try {
-        connection.query('INSERT INTO test VALUES ()', (error) => {
+        connection.query(`INSERT INTO ${process.env.TABLE_NAME} VALUES ()`, (error) => {
             if (error) throw error;
             response.json({success: true})});
     } catch (error) {
