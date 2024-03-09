@@ -21,3 +21,9 @@ th, td {
     border-top-color: transparent;
     border-right-color: transparent;
 }
+
+#search-active-msg {
+    color: firebrick;
+    font: 0.75em "Helvetica";
+    display: none;
+}

@@ -11,6 +11,7 @@ async function getElements(id: number): Promise<void>;
 async function getElements(id?: number) {
     try {
         const response = await(await fetch(server_address + `/getElements${id ? `?mode=id%3D${id}` : ''}`)).json();
+        document.getElementById("search-active-msg")!.style.display = (id ? "block" : "none");
         loadTable(response);
     } catch {
         loadTable([]);
