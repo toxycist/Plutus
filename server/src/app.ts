@@ -18,9 +18,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 
-app.get('/getTable', (request, response) => {
+app.get('/getElements', (request, response) => {
     try {
-        connection.query(`SELECT * FROM ${process.env.TABLE_NAME}`, (error, result) => {
+        connection.query(`SELECT * FROM ${process.env.TABLE_NAME}` + (request.query.mode ? ` WHERE ${request.query.mode}` : ''), (error, result) => {
             if (error) throw error;
             response.json(result)});
     } catch (error) {

@@ -5,16 +5,19 @@ interface tableRow {
 
 const server_address = 'http://localhost:1987'
 
-async function getTable() {
+async function getElements(): Promise<void>;
+async function getElements(id: number): Promise<void>;
+
+async function getElements(id?: number) {
     try {
-        const response = await(await fetch(server_address + '/getTable')).json();
+        const response = await(await fetch(server_address + `/getElements${id ? `?mode=id%3D${id}` : ''}`)).json();
         loadTable(response);
     } catch {
         loadTable([]);
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => getTable());
+document.addEventListener('DOMContentLoaded', () => getElements());
 
 function renderRow(row: tableRow){
     return `<tr>
@@ -42,7 +45,7 @@ async function addElement(){
     try {
         const response = await (await fetch(server_address + '/addElement')).json();
         if (!response.success) throw Error;
-        await getTable();
+        await getElements();
     } catch {
         alert("An error occured: the request did not reach the server");
     }
@@ -51,7 +54,7 @@ async function addElement(){
 async function deleteElement(id: number) {
     try {
         const response = await (await fetch(server_address + '/deleteElement/' + id, {method: 'DELETE'})).json();
-        if (response.status === "success") await getTable();
+        if (response.status === "success") await getElements();
         alert("Deletion: " + response.status);
     } catch {
         alert("An error occured: the request did not reach the server");
