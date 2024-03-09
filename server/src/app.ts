@@ -38,6 +38,19 @@ app.get('/addElement', (request, response) => {
     }
 })
 
+app.delete("/deleteElement/:id", (request, response) => {
+    try {
+        connection.query(`DELETE FROM ${process.env.TABLE_NAME} WHERE id=${request.params.id}`, (error) => {
+            if (error) {
+                response.json({status: "fail"})
+                throw error
+            }
+            response.json({status: "success"})});
+    } catch (error) {
+        console.log(response.statusCode);
+    }
+})
+
 app.listen(process.env.PORT, () => {
     console.log(`Server has started on PORT ${process.env.PORT}`)
 });

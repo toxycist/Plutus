@@ -20,7 +20,7 @@ function renderRow(row: tableRow){
     return `<tr>
     <td>${row.id}</td>
     <td>${new Date(row.dateAdded).toLocaleString()}</td>
-    <td><button class="delete-btn" elem-id=${row.id}>Delete</td>
+    <td><button class="delete-btn" onclick="deleteElement(${row.id})">Delete</td>
     </tr>`
 }
 
@@ -44,6 +44,16 @@ async function addElement(){
         if (!response.success) throw Error;
         await getTable();
     } catch {
-        alert("An error occured: the request did not reach the server")
+        alert("An error occured: the request did not reach the server");
+    }
+}
+
+async function deleteElement(id: number) {
+    try {
+        const response = await (await fetch(server_address + '/deleteElement/' + id, {method: 'DELETE'})).json();
+        if (response.status === "success") await getTable();
+        alert("Deletion: " + response.status);
+    } catch {
+        alert("An error occured: the request did not reach the server");
     }
 }
