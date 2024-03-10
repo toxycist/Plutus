@@ -1,0 +1,29 @@
+main {
+    margin: 50px auto;
+    zoom: 175%;
+    text-align: center;
+}
+
+table, th, td {
+    border-collapse: collapse;
+    border: 1px solid black;
+}
+
+table {
+    margin: 50px auto;
+}
+
+th, td {
+    padding: 5px;
+}
+
+#delete-header {
+    border-top-color: transparent;
+    border-right-color: transparent;
+}
+
+#search-active-msg {
+    color: firebrick;
+    font: 0.75em "Helvetica";
+    display: none;
+}
