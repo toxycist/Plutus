@@ -1,6 +1,6 @@
 main {
-    margin: 200px auto;
-    transform: scale(2);
+    margin: 50px auto;
+    zoom: 175%;
     text-align: center;
 }
 
