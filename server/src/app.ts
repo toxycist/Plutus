@@ -1,10 +1,13 @@
 import express, { Express } from 'express';
+import session from 'express-session';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import mysql from 'mysql';
+import authProvider from './MS_auth_provider/MS_auth_provider.js';
+import { REDIRECT_URI } from './MS_auth_provider/MS_auth_config.js';
 
 const app: Express = express();
-dotenv.config(); 
+dotenv.config()
 /* There should be a .env file in '../dist' directory, containing following variables:
 PORT - localhost port the server will be running on.
 CONNECTION_STRING - the connection string to connect to MySQL database
@@ -15,6 +18,15 @@ const connection = mysql.createConnection(process.env.CONNECTION_STRING!);
 connection.connect();
 
 app.use(cors());
+app.use(session({
+    secret: process.env.EXPRESS_SESSION_SECRET!,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        secure: false, // set this to true on production
+    }
+}));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 
@@ -50,6 +62,12 @@ app.delete("/deleteElement/:id", (request, response) => {
         console.log(response.statusCode);
     }
 })
+
+app.get('/login', authProvider.login({
+    scopes: [],
+    redirectUri: REDIRECT_URI,
+    successRedirect: '/'
+}))
 
 app.listen(process.env.PORT, () => {
     console.log(`Server has started on PORT ${process.env.PORT}`)

@@ -4,5 +4,8 @@
   },
   "scripts": {
     "all": "npm install && tsc"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.28"
   }
 }
