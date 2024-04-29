@@ -3,8 +3,7 @@ import session from 'express-session';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import mysql from 'mysql';
-import authProvider from './MS_auth_provider/MS_auth_provider.js';
-import { REDIRECT_URI } from './MS_auth_provider/MS_auth_config.js';
+import authProvider from './MS_auth_provider/MS_auth_provider';
 
 const app: Express = express();
 dotenv.config()
@@ -65,9 +64,9 @@ app.delete("/deleteElement/:id", (request, response) => {
 
 app.get('/login', authProvider.login({
     scopes: [],
-    redirectUri: REDIRECT_URI,
+    redirectUri: process.env.REDIRECT_URI,
     successRedirect: '/'
-}))
+}));
 
 app.listen(process.env.PORT, () => {
     console.log(`Server has started on PORT ${process.env.PORT}`)

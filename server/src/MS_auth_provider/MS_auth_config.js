@@ -3,7 +3,9 @@
  * Licensed under the MIT License.
  */
 
-require('dotenv').config();
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 /**
  * Configuration object to be passed to MSAL instance on creation.
