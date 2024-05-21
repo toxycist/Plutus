@@ -11,6 +11,21 @@ dotenv.config()
 PORT - localhost port the server will be running on.
 CONNECTION_STRING - the connection string to connect to MySQL database
 TABLE_NAME - name of the table in the database
+
+As described in the Microsoft Authentication Provider configuration:
+
+CLOUD_INSTANCE - Microsoft endpoint which will authenticate users (should end with a trailing slash)
+TENANT_ID - can be viewed in Entra
+CLIENT_ID - can be viewed in Entra
+CLIENT_SECRET - can be viewed in Entra
+
+REDIRECT_URI - a URI that will receive encoded user data after login
+POST_LOGOUT_REDIRECT_URI - not configured yet
+
+GRAPH_API_ENDPOINT - I guess it is always the same: "https://graph.microsoft.com/" (should end with a trailing slash)
+EXPRESS_SESSION_SECRET - self-explanatory
+
+ADMIN_LIST - a string containing emails of all the admins separated from each other by ' '
 */
 
 const connection = mysql.createConnection(process.env.CONNECTION_STRING!);
@@ -63,10 +78,16 @@ app.delete("/deleteElement/:id", (request, response) => {
 })
 
 app.get('/login', authProvider.login({
-    scopes: [],
+    scopes: ['User.Read'],
     redirectUri: process.env.REDIRECT_URI,
-    successRedirect: '/'
+    successRedirect: '/fork'
 }));
+
+app.post('/decode-user-data', authProvider.handleRedirect())
+
+app.get('/fork', (req, res) => {
+    res.redirect(process.env.ADMIN_LIST?.split(" ").includes((req.session as any).account.username ) ? "http://localhost/admin_page.html" : "http://localhost/user_page.html")
+})
 
 app.listen(process.env.PORT, () => {
     console.log(`Server has started on PORT ${process.env.PORT}`)
