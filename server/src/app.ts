@@ -89,6 +89,8 @@ app.get('/fork', (req, res) => {
     res.redirect(process.env.ADMIN_LIST?.split(" ").includes((req.session as any).account.username ) ? "http://localhost/admin_page.html" : "http://localhost/user_page.html")
 })
 
+app.get('/logout', authProvider.logout({postLogoutRedirectUri: process.env.POST_LOGOUT_REDIRECT_URI}))
+
 app.listen(process.env.PORT, () => {
     console.log(`Server has started on PORT ${process.env.PORT}`)
 });

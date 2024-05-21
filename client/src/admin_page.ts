@@ -58,3 +58,11 @@ export async function deleteElement(id: number) {
         alert("An error occured: the request did not reach the server");
     }
 }
+
+export async function logout(){
+    try {
+        window.location.href = server_address + '/logout'
+    } catch {
+        alert("An error occured: the request did not reach the server");
+    }
+}
