@@ -29,7 +29,6 @@ ADMIN_LIST - a string containing emails of all the admins separated from each ot
 */
 
 const connection = mysql.createConnection(process.env.CONNECTION_STRING!);
-connection.connect();
 
 app.use(cors());
 app.use(session({
@@ -46,6 +45,15 @@ app.use(express.urlencoded({extended: false}));
 
 app.get('/getElements', (request, response) => {
     try {
+        if(request.query.mode){
+            if ((request.query.mode as string).includes('reservationhistory') || (request.query.mode as string).includes('name')){
+                connection.query(`SELECT * FROM ${process.env.TABLE_NAME} WHERE ${(request.query.mode as string).split('=')[0]} LIKE '%${(request.query.mode as string).replaceAll("'", "").split('=')[1]}%'`, (error, result) => {
+                    if (error) throw error;
+                    response.json(result)});
+                    return;
+            }
+        }
+
         connection.query(`SELECT * FROM ${process.env.TABLE_NAME}` + (request.query.mode ? ` WHERE ${request.query.mode}` : ''), (error, result) => {
             if (error) throw error;
             response.json(result)});
@@ -55,13 +63,21 @@ app.get('/getElements', (request, response) => {
 });
 
 app.get('/addElement', (request, response) => {
-    try {
-        connection.query(`INSERT INTO ${process.env.TABLE_NAME} VALUES ()`, (error) => {
-            if (error) throw error;
-            response.json({success: true})});
-    } catch (error) {
-        console.log(response.statusCode);
-    }
+    connection.query(`INSERT INTO ${process.env.TABLE_NAME} (name, originRoom) VALUES ("${request.query.name}", ${request.query.originRoom})`, (err) => {         
+        if (err) response.json({status: `${err.code}`})
+        else response.json({status: "success"})})
+})
+
+app.get('/truncateTable', (request, response) => {
+    connection.query(`TRUNCATE TABLE ${process.env.TABLE_NAME}`, (err) =>{
+        if (err) response.json({status: `${err.code}`})
+        else response.json({status: "success"})})
+})
+
+app.patch("/editElement/:id", (request, response) => {
+    connection.query(`UPDATE ${process.env.TABLE_NAME} SET name="${request.body.name}", originRoom=${request.body.originRoom} WHERE id=${request.params.id}`, (error) => {
+        if (error) response.json({status: `${error.code}`})
+        else response.json({status: "success"})});
 })
 
 app.delete("/deleteElement/:id", (request, response) => {

@@ -7,17 +7,44 @@
     <title>Plutus Control Panel</title>
 </head>
 <body>
+    TXC Incorporation Three-Tier Rentable Objects and Space Management System
     <main>
         <script src="script/admin_page.js"></script>
 
-        <button id="add-btn" onclick="__webpack_exports__.addElement()">Add Element</button>
         <button id="logout-btn" onclick="__webpack_exports__.logout()">Log out</button>
+        <br><br>
+
+        <form id="add-element-form" onsubmit="__webpack_exports__.addElement(document.querySelector('.name-input').value, document.querySelector('.origin-room-input').value)">
+            <input required type="text" maxlength="50" placeholder="Device name" class="name-input">
+            <input required type="number" min="1" max="255" placeholder="Device origin room" class="origin-room-input">
+            <input type="submit" value="Add Item" class="add-btn">
+        </form>
+
+        <form id="edit-element-form" hidden onsubmit="__webpack_exports__.editElement(document.querySelector('#id-of-edited-element').textContent.slice(4), document.querySelector(`.name-input[placeholder='New device name']`).value, 
+                                                                                      document.querySelector(`.origin-room-input[placeholder='New device origin room']`).value)">
+            <label id="id-of-edited-element"></label>
+            <input required type="text" maxlength="50" placeholder="New device name" class="name-input">
+            <input required type="number" min="1" max="255" placeholder="New device origin room" class="origin-room-input">
+            <input type="submit" value="Update Item" class="add-btn">
+        </form>
+        <br>
+
+        <button id="truncate-table-btn" onclick="if(confirm('WARNING! Proceeding will lead to every instance of the table being deleted and ID count for further instances reset to 1. Are you sure you want to proceed?')) __webpack_exports__.truncateTable()"> Truncate table </button>
 
         <br><br>
 
         <div>
-            <input placeholder="Search by ID" id="search-input">
-            <button id="search-btn" onclick="__webpack_exports__.getElements(document.querySelector('#search-input').value)">Go</button>
+            <input type="number" placeholder="Search by ID" id="search-input">
+            <select id="search-filters-dropdown" onchange="__webpack_exports__.syncSearchInput()">
+                <option value="id">ID</option>
+                <option value="name">Name</option>
+                <option value="originroom">Origin Room</option>
+                <option value="reservationhistory">Reservation History</option>
+            </select>
+            <button id="search-btn" onclick="
+            let mode = document.querySelector('#search-filters-dropdown')
+            .options[document.querySelector('#search-filters-dropdown').selectedIndex].value
+            __webpack_exports__.getElements(mode, document.querySelector('#search-input').value)">Go</button>
         </div>
 
         <b id="search-active-msg"> Search is active </b>
@@ -25,7 +52,10 @@
         <table>
             <thead>
                 <th>ID</th>
-                <th>Date Added</th>
+                <th>Name</th>
+                <th>Origin Room</th>
+                <th>Reservation History</th>
+                <th id="edit-header"></th>
                 <th id="delete-header"></th>
             </thead>
             <tbody></tbody>

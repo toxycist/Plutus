@@ -17,13 +17,22 @@ th, td {
     padding: 5px;
 }
 
-#delete-header {
-    border-top-color: transparent;
-    border-right-color: transparent;
+.origin-room-input {
+    width: 160px
 }
 
 #search-active-msg {
     color: firebrick;
     font: 0.75em "Helvetica";
     display: none;
+}
+
+#truncate-table-btn {
+    background-color: red;
+    border-color: palevioletred;
+    color: white;
+}
+
+#search-input {
+    width: 190px
 }
