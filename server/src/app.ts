@@ -1,5 +1,6 @@
 import express, { Express } from 'express';
 import session from 'express-session';
+const MemoryStore = require('memorystore')(session)
 import dotenv from 'dotenv';
 import cors from 'cors';
 import mysql from 'mysql';
@@ -30,18 +31,26 @@ ADMIN_LIST - a string containing emails of all the admins separated from each ot
 
 const connection = mysql.createConnection(process.env.CONNECTION_STRING!);
 
-app.use(cors());
+app.use(cors({credentials: true, origin: 'http://localhost'}));
 app.use(session({
+    store: new MemoryStore({
+        checkPeriod: 1000 * 60 * 60 * 24 * 7
+    }),
     secret: process.env.EXPRESS_SESSION_SECRET!,
     resave: false,
     saveUninitialized: false,
     cookie: {
+        maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
         httpOnly: true,
         secure: false, // set this to true on production
     }
 }));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
+
+app.get('/authCheck', (request, response) => {
+    (request.sessionStore.all as any)((error: any, sessions: any) => {response.json(request.session.id in sessions)});
+})
 
 app.get('/getElements', (request, response) => {
     try {
@@ -102,6 +111,7 @@ app.get('/login', authProvider.login({
 app.post('/decode-user-data', authProvider.handleRedirect())
 
 app.get('/fork', (req, res) => {
+    console.log(`/fork: ${req.session.id}`)
     res.redirect(process.env.ADMIN_LIST?.split(" ").includes((req.session as any).account.username ) ? "http://localhost/admin_page.html" : "http://localhost/user_page.html")
 })
 

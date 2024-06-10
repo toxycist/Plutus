@@ -7,6 +7,17 @@ interface tableRow {
     reservationhistory: string
 }
 
+async function authCheck(callback: typeof getElements){
+    if (await (await fetch(server_address + `/authCheck`, {
+        credentials: 'include'
+    })).json()) {
+        callback();
+    }
+    else {
+        window.location.href = 'http://localhost/index.html'
+    }
+}
+
 export async function getElements(mode?: string, search_query?: string | number) {
     try {
         hideEditForm()
@@ -19,7 +30,7 @@ export async function getElements(mode?: string, search_query?: string | number)
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => getElements());
+document.addEventListener('DOMContentLoaded', () => authCheck(getElements));
 
 function renderRow(row: tableRow){
     return `<tr>
