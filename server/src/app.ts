@@ -9,7 +9,8 @@ import authProvider from './MS_auth_provider/MS_auth_provider';
 const app: Express = express();
 dotenv.config()
 /* There should be a .env file in '../dist' directory, containing following variables:
-PORT - localhost port the server will be running on.
+PORT - a port the server will be running on.
+HOST_ADDRESS - the address of the hosted frontend (web server, should not end with a trailing slash)
 CONNECTION_STRING - the connection string to connect to MySQL database
 TABLE_NAME - name of the table in the database
 
@@ -31,7 +32,7 @@ ADMIN_LIST - a string containing emails of all the admins separated from each ot
 
 const connection = mysql.createConnection(process.env.CONNECTION_STRING!);
 
-app.use(cors({credentials: true, origin: 'http://localhost'}));
+app.use(cors({credentials: true, origin: `${process.env.HOST_ADDRESS}`}));
 app.use(session({
     store: new MemoryStore({
         checkPeriod: 1000 * 60 * 60 * 24 * 7
@@ -111,8 +112,7 @@ app.get('/login', authProvider.login({
 app.post('/decode-user-data', authProvider.handleRedirect())
 
 app.get('/fork', (req, res) => {
-    console.log(`/fork: ${req.session.id}`)
-    res.redirect(process.env.ADMIN_LIST?.split(" ").includes((req.session as any).account.username ) ? "http://localhost/admin_page.html" : "http://localhost/user_page.html")
+    res.redirect(process.env.ADMIN_LIST?.split(" ").includes((req.session as any).account.username ) ? `${process.env.HOST_ADDRESS}/admin_page.html` : `${process.env.HOST_ADDRESS}/user_page.html`)
 })
 
 app.get('/logout', authProvider.logout({postLogoutRedirectUri: process.env.POST_LOGOUT_REDIRECT_URI}))

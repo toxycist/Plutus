@@ -1,4 +1,4 @@
-import { server_address } from "./utils";
+import { server_address } from "./backend_address";
 
 interface tableRow {
     id: number,
