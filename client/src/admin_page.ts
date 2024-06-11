@@ -7,14 +7,15 @@ interface tableRow {
     reservationhistory: string
 }
 
-async function authCheck(callback: typeof getElements){
+export async function authCheck(){
     if (await (await fetch(server_address + `/authCheck`, {
         credentials: 'include'
     })).json()) {
-        callback();
+        return true
     }
     else {
         window.location.href = 'http://localhost/index.html'
+        return false;
     }
 }
 
@@ -30,7 +31,19 @@ export async function getElements(mode?: string, search_query?: string | number)
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => authCheck(getElements));
+document.addEventListener('DOMContentLoaded', async () => {if(await authCheck()) getElements()});
+
+export async function onEdit(id: number, name: string, originroom: string) {
+    if(await authCheck()){
+        eval(`__webpack_exports__.showEditForm(${id}, '${name}', ${originroom})`)
+    }
+}
+
+export async function onDelete(id: number) {
+    if(await authCheck()){
+        eval(`__webpack_exports__.deleteElement(${id})`)
+    }
+}
 
 function renderRow(row: tableRow){
     return `<tr>
@@ -38,8 +51,8 @@ function renderRow(row: tableRow){
     <td>${row.name}</td>
     <td>${row.originroom}</td>
     <td>${row.reservationhistory}</td>
-    <td><button class="edit-btn" onclick="__webpack_exports__.showEditForm(${row.id}, '${row.name}', ${row.originroom})">Edit</td>
-    <td><button class="delete-btn" onclick="__webpack_exports__.deleteElement(${row.id})">Delete</td>
+    <td><button class="edit-btn" onclick="__webpack_exports__.onEdit(${row.id}, '${row.name}', ${row.originroom})">Edit</td>
+    <td><button class="delete-btn" onclick="__webpack_exports__.onDelete(${row.id})">Delete</td>
     </tr>`
 }
 
@@ -63,9 +76,7 @@ export async function addElement(name: string, originRoom: number){
         const response = await (await fetch(server_address + `/addElement?name=${name}&originRoom=${originRoom}`)).json();
         if (response.status === "ER_DUP_ENTRY") alert("Error: Item with this name already exists.");
         await getElements();
-    } catch {
-        alert("An error occured: the request did not reach the server");
-    }
+    } catch {}
 }
 
 export function showEditForm(id: number, oldName: string, oldOriginRoom: number){
@@ -103,9 +114,7 @@ export async function editElement(id: number, updatedName: string, updatedOrigin
             alert(`Edit: ${response.status}`);
             hideEditForm()
         }
-    } catch {
-        alert("An error occured: the request did not reach the server");
-    }
+    } catch {}
 }
 
 export async function truncateTable(){
@@ -116,9 +125,7 @@ export async function truncateTable(){
             await getElements();
         }
         else alert(`Error: ${response.status}`)
-    } catch {
-        alert("An error occured: the request did not reach the server");
-    }
+    } catch {}
 }
 
 export async function deleteElement(id: number) {
@@ -126,9 +133,7 @@ export async function deleteElement(id: number) {
         const response = await (await fetch(server_address + '/deleteElement/' + id, {method: 'DELETE'})).json();
         if (response.status === "success") await getElements();
         alert("Deletion: " + response.status);
-    } catch {
-        alert("An error occured: the request did not reach the server");
-    }
+    } catch {}
 }
 
 export function syncSearchInput(){
@@ -144,7 +149,5 @@ export async function logout(){
     try {
         await fetch(server_address + '/getElements')
         window.location.href = server_address + '/logout'
-    } catch {
-        alert("An error occured: the request did not reach the server");
-    }
+    } catch {}
 }

@@ -14,14 +14,30 @@
         <button id="logout-btn" onclick="__webpack_exports__.logout()">Log out</button>
         <br><br>
 
-        <form id="add-element-form" onsubmit="__webpack_exports__.addElement(document.querySelector('.name-input').value, document.querySelector('.origin-room-input').value)">
+        <script>
+            async function onTruncate() {
+                if(await __webpack_exports__.authCheck()) {
+                    if(confirm('WARNING! Proceeding will lead to every instance of the table being deleted and ID count for further instances reset to 1. Are you sure you want to proceed?')){
+                        __webpack_exports__.truncateTable();
+                    }
+                }
+            }
+
+            async function onAdd() {
+                if(await __webpack_exports__.authCheck()) {
+                    __webpack_exports__.addElement(document.querySelector('.name-input').value, document.querySelector('.origin-room-input').value)
+                }
+            }
+        </script>
+
+        <form id="add-element-form" onsubmit="onAdd()">
             <input required type="text" maxlength="50" placeholder="Device name" class="name-input">
             <input required type="number" min="1" max="255" placeholder="Device origin room" class="origin-room-input">
             <input type="submit" value="Add Item" class="add-btn">
         </form>
 
         <form id="edit-element-form" hidden onsubmit="__webpack_exports__.editElement(document.querySelector('#id-of-edited-element').textContent.slice(4), document.querySelector(`.name-input[placeholder='New device name']`).value, 
-                                                                                      document.querySelector(`.origin-room-input[placeholder='New device origin room']`).value)">
+                                                                                                            document.querySelector(`.origin-room-input[placeholder='New device origin room']`).value)">
             <label id="id-of-edited-element"></label>
             <input required type="text" maxlength="50" placeholder="New device name" class="name-input">
             <input required type="number" min="1" max="255" placeholder="New device origin room" class="origin-room-input">
@@ -29,7 +45,7 @@
         </form>
         <br>
 
-        <button id="truncate-table-btn" onclick="if(confirm('WARNING! Proceeding will lead to every instance of the table being deleted and ID count for further instances reset to 1. Are you sure you want to proceed?')) __webpack_exports__.truncateTable()"> Truncate table </button>
+        <button id="truncate-table-btn" onclick="onTruncate()">Truncate table</button>
 
         <br><br>
 
@@ -43,7 +59,7 @@
             </select>
             <button id="search-btn" onclick="
             let mode = document.querySelector('#search-filters-dropdown')
-            .options[document.querySelector('#search-filters-dropdown').selectedIndex].value
+            .options[document.querySelector('#search-filters-dropdown').selectedIndex].value;
             __webpack_exports__.getElements(mode, document.querySelector('#search-input').value)">Go</button>
         </div>
 
