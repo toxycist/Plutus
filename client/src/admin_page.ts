@@ -1,4 +1,4 @@
-import { server_address } from "./backend_address";
+import { server_address, frontend_address } from "./server_addresses";
 
 interface tableRow {
     id: number,
@@ -14,7 +14,7 @@ export async function authCheck(){
         return true
     }
     else {
-        window.location.href = 'http://localhost/index.html'
+        window.location.href = `${frontend_address}/index.html`
         return false;
     }
 }

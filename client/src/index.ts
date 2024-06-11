@@ -1,4 +1,4 @@
-import { server_address } from "./backend_address";
+import { server_address } from "./server_addresses";
 
 export async function login() {
     try {
