@@ -43,6 +43,20 @@
             <input required type="number" min="1" max="255" placeholder="New device origin room" class="origin-room-input">
             <input type="submit" value="Update Item" class="add-btn">
         </form>
+
+        <form id="reserve-element-form" hidden onsubmit="__webpack_exports__.reserveElement(document.querySelector('#id-of-reserved-element').textContent.slice(4), document.querySelector('#start').value, document.querySelector('#end').value)">
+            <label id="id-of-reserved-element"></label>
+            <label for="start">| Start of reservation: </label>
+            <input required type="datetime-local" id="start" class="datetime-input">
+            <script>document.querySelector('#start').min = (new Date(new Date().toString().split('GMT')[0]+' UTC').toISOString().split('.')[0]).slice(0, 16)</script>
+            <label for="end">Reserve for</label>
+            <input required type="number" id="end" min="1" max="168">
+            <select id="reservation-duration-units-dropdown" onchange="__webpack_exports__.syncReservationInput()">
+                <option value="hours">hours</option>
+                <option value="days">days</option>
+            </select>
+            <input type="submit" value="Reserve Item" class="reserve-btn">
+        </form>
         <br>
 
         <button id="truncate-table-btn" onclick="onTruncate()">Truncate table</button>

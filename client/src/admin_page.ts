@@ -22,6 +22,7 @@ export async function authCheck(){
 export async function getElements(mode?: string, search_query?: string | number) {
     try {
         hideEditForm()
+        hideReserveForm()
 
         const response = await(await fetch(server_address + `/getElements${search_query ? `?mode=${mode}%3D'${search_query}'` : ''}`)).json();
         document.getElementById("search-active-msg")!.style.display = (search_query ? "block" : "none");
@@ -32,6 +33,12 @@ export async function getElements(mode?: string, search_query?: string | number)
 }
 
 document.addEventListener('DOMContentLoaded', async () => {if(await authCheck()) getElements()});
+
+export async function onReserve(id: number) {
+    if(await authCheck()){
+        eval(`__webpack_exports__.showReserveForm(${id})`)
+    }
+}
 
 export async function onEdit(id: number, name: string, originroom: string) {
     if(await authCheck()){
@@ -51,6 +58,7 @@ function renderRow(row: tableRow){
     <td>${row.name}</td>
     <td>${row.originroom}</td>
     <td>${row.reservationhistory}</td>
+    <td><button class="reserve-btn" onclick="__webpack_exports__.onReserve(${row.id})">Reserve</td>
     <td><button class="edit-btn" onclick="__webpack_exports__.onEdit(${row.id}, '${row.name}', ${row.originroom})">Edit</td>
     <td><button class="delete-btn" onclick="__webpack_exports__.onDelete(${row.id})">Delete</td>
     </tr>`
@@ -60,7 +68,7 @@ function loadTable(rowArray: Array<tableRow>){
 
     const tbody = document.querySelector('table tbody') as HTMLTableElement;
     if (rowArray.length === 0){
-        tbody.innerHTML = "<tr><td class='no-data' colspan='4'>No Data</td></tr>";
+        tbody.innerHTML = "<tr><td class='no-data' colspan='6'>No Data</td></tr>";
         return;
     }
 
@@ -82,16 +90,39 @@ export async function addElement(name: string, originRoom: number){
 export function showEditForm(id: number, oldName: string, oldOriginRoom: number){
     document.getElementById('id-of-edited-element')!.innerHTML = `ID: ${id}`;
 
-    (document.querySelector("#add-element-form") as HTMLElement).hidden = true;
-    (document.querySelector("#edit-element-form") as HTMLElement).hidden = false;
+    hideForm("#add-element-form")
+    hideForm("#reserve-element-form")
+    showForm("#edit-element-form");
 
     (document.querySelector(".name-input[placeholder='New device name']") as HTMLInputElement).value = oldName;
     (document.querySelector(".origin-room-input[placeholder='New device origin room']") as HTMLInputElement).value = `${oldOriginRoom}`;
 }
 
+export function showReserveForm(id: number){
+    document.getElementById('id-of-reserved-element')!.innerHTML = `ID: ${id}`;
+    (document.getElementById('start') as HTMLInputElement).value = "";
+    (document.getElementById('end') as HTMLInputElement).value = "";
+    hideForm("#add-element-form")
+    hideForm("#edit-element-form")
+    showForm("#reserve-element-form");
+}
+
 function hideEditForm(){
-    (document.querySelector("#add-element-form") as HTMLElement).hidden = false;
-    (document.querySelector("#edit-element-form") as HTMLElement).hidden = true;
+    showForm("#add-element-form")
+    hideForm("#edit-element-form")
+}
+
+function hideReserveForm(){
+    showForm("#add-element-form")
+    hideForm("#reserve-element-form")
+}
+
+function hideForm(formId: string){
+    (document.querySelector(formId) as HTMLElement).hidden = true;
+}
+
+function showForm(formId: string){
+    (document.querySelector(formId) as HTMLElement).hidden = false;
 }
 
 export async function editElement(id: number, updatedName: string, updatedOriginRoom: number) {
@@ -143,6 +174,14 @@ export function syncSearchInput(){
     searchInput.placeholder = `Search by ${filterMenuSelectedElement.text.toLowerCase()}`.replace("search", "Search").replace("id", "ID")
     if (filterMenuSelectedElement.text == "ID" || filterMenuSelectedElement.text == "Origin Room") searchInput.type = "number"
     else searchInput.type = "text"
+}
+
+export function syncReservationInput(){
+    if((document.querySelector("#reservation-duration-units-dropdown") as HTMLSelectElement).selectedIndex == 0){
+        (document.querySelector("#end")! as HTMLInputElement).max = '168';
+    } else {
+        (document.querySelector("#end")! as HTMLInputElement).max = '7';
+    }
 }
 
 export async function logout(){
